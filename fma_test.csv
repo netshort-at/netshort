@@ -1,4 +1,17 @@
-Position Holder,Issuer,ISIN Code,Position Date,Net Short Position (%),Reporting Date,Cancellation Date
-Beispiel Holder 1,Testfirma A,AT0000XXX,2026-01-01,2.5,2026-01-02,-
-Beispiel Holder 2,Testfirma B,AT0000YYY,2026-01-02,1.8,2026-01-03,-
-Beispiel Holder 3,Testfirma C,AT0000ZZZ,2026-01-03,3.2,2026-01-04,-
+Position Holder,Issuer,ISIN Code,Position Date,Net Short Position(%),Reporting Date,Cancellation Date
+ActusRayPartners Limited,SCHOELLER-BLECKMANN OILFIELD EQUIPMENT Aktiengesellschaft,AT0000946652,2025-12-30,0.84,2025-12-31,
+ActusRayPartners Limited,SCHOELLER-BLECKMANN OILFIELD EQUIPMENT Aktiengesellschaft,AT0000946652,2025-11-21,0.7,2025-11-24,
+ActusRayPartners Limited,SCHOELLER-BLECKMANN OILFIELD EQUIPMENT Aktiengesellschaft,AT0000946652,2025-10-24,0.6,2025-10-27,
+ActusRayPartners Limited,SCHOELLER-BLECKMANN OILFIELD EQUIPMENT Aktiengesellschaft,AT0000946652,2025-08-27,0.5,2025-09-09,
+ActusRayPartners Limited,SCHOELLER-BLECKMANN OILFIELD EQUIPMENT Aktiengesellschaft,AT0000946652,2025-03-11,0.7,2025-03-12,
+Covalis Capital LLP,OMV Aktiengesellschaft,AT0000743059,2025-12-09,0.7,2025-12-10,
+Gladstone Capital Management LLP,Österreichische Post Aktiengesellschaft,AT0000APOST4,2026-01-02,0.38,2026-01-05,
+JPMORGAN ASSET MANAGEMENT (UK) LIMITED,AT & S Austria Technologie & Systemtechnik Aktiengesellschaft,AT0000969985,2025-09-16,0.81,2025-09-17,
+JPMORGAN ASSET MANAGEMENT (UK) LIMITED,PALFINGER AG,AT0000758305,2025-10-20,0.5,2025-10-21,
+LMR Partners LLP,DO & CO Aktiengesellschaft,AT0000818802,2023-01-30,0.69,2023-01-31,
+Marble Bar Asset Management LLP,S&T AG,AT0000A0E9W5,2025-12-11,0.62,2025-12-12,
+Qube Research and Technologies,AT & S Austria Technologie & Systemtechnik Aktiengesellschaft,AT0000969985,2024-11-19,0.81,2024-11-20,
+Qube Research and Technologies,CA Immobilien Anlagen Aktiengesellschaft,AT0000641352,2024-11-12,0.8,2024-11-13,
+STURGEON VENTURES,Zumtobel Group AG,AT0000837307,2018-06-26,0.59,2018-06-27,
+SYQUANT CAPITAL,IMMOFINANZ AG,AT0000A21KS2,2021-12-30,0.73,2021-12-31,
+TFG Asset Management UK LLP,IMMOFINANZ AG,AT0000A21KS2,2022-01-18,0.54,2022-01-19,
