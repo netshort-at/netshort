@@ -108,6 +108,32 @@
 </table>
 
 
+<script>
+  async function loadCSV() {
+    // CSV-Datei aus deinem Repository
+    const response = await fetch('fma_test.csv');
+    const text = await response.text();
+    const rows = text.split('\n').slice(1); // erste Zeile = Header
+    const table = document.getElementById('shortsTable');
+
+    // Alte Testzeilen entfernen (außer Header)
+    table.innerHTML = table.rows[0].outerHTML;
+
+    rows.forEach(row => {
+      if(row.trim() === "") return; // leere Zeilen überspringen
+      const cols = row.split(',');
+      const tr = document.createElement('tr');
+      cols.forEach(col => {
+        const td = document.createElement('td');
+        td.textContent = col;
+        tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    });
+  }
+
+  loadCSV();
+</script>
 
 </body>
 </html>
