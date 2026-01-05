@@ -1,0 +1,4 @@
+Position Holder,Issuer,ISIN Code,Position Date,Net Short Position (%),Reporting Date,Cancellation Date
+Beispiel Holder 1,Testfirma A,AT0000XXX,2026-01-01,2.5,2026-01-02,-
+Beispiel Holder 2,Testfirma B,AT0000YYY,2026-01-02,1.8,2026-01-03,-
+Beispiel Holder 3,Testfirma C,AT0000ZZZ,2026-01-03,3.2,2026-01-04,-
