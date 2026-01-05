@@ -1,0 +1,26 @@
+name: Daily FMA CSV Update
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # läuft jeden Tag um 06:00 Uhr UTC
+  workflow_dispatch:  # erlaubt manuelles Starten
+
+jobs:
+  update-csv:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Repository auschecken
+      uses: actions/checkout@v3
+
+    - name: CSV von FMA herunterladen
+      run: |
+        curl -o fma_test.csv https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv
+
+    - name: Commit & push
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add fma_test.csv
+        git commit -m "Automatisches Update der FMA CSV [GitHub Actions]" || echo "No changes to commit"
+        git push
