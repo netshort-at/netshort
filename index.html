@@ -109,19 +109,37 @@
 
 
 <script>
-  async function loadCSV() {
-    // CSV-Datei aus deinem Repository
+<script>
+async function loadCSV() {
+  try {
+    // CSV-Datei aus deinem Repository laden
     const response = await fetch('fma_test.csv');
+    
+    if (!response.ok) {
+      throw new Error(`CSV-Datei konnte nicht geladen werden: ${response.statusText}`);
+    }
+
     const text = await response.text();
-    const rows = text.split('\n').slice(1); // erste Zeile = Header
+    const rows = text.split('\n');
+
+    // Tabelle finden
     const table = document.getElementById('shortsTable');
 
-    // Alte Testzeilen entfernen (außer Header)
-    table.innerHTML = table.rows[0].outerHTML;
+    // Header aus CSV holen (erste Zeile)
+    const header = rows[0].split(/[,;]/);
+    table.innerHTML = ''; // alte Testzeilen entfernen
+    const trHeader = document.createElement('tr');
+    header.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      trHeader.appendChild(th);
+    });
+    table.appendChild(trHeader);
 
-    rows.forEach(row => {
-      if(row.trim() === "") return; // leere Zeilen überspringen
-      const cols = row.split(',');
+    // Alle weiteren Zeilen hinzufügen
+    rows.slice(1).forEach(row => {
+      if (row.trim() === '') return; // leere Zeilen überspringen
+      const cols = row.split(/[,;]/); // trennt Komma oder Semikolon
       const tr = document.createElement('tr');
       cols.forEach(col => {
         const td = document.createElement('td');
@@ -130,9 +148,17 @@
       });
       table.appendChild(tr);
     });
-  }
 
-  loadCSV();
+    console.log('CSV erfolgreich geladen!');
+  } catch (err) {
+    console.error('Fehler beim Laden der CSV:', err);
+  }
+}
+
+// Script starten
+loadCSV();
+</script>
+
 </script>
 
 </body>
