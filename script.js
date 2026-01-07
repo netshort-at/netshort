@@ -1,35 +1,93 @@
-const csvText = `date,isin,company,holder,position_percent,position_type,cancellation_date
-2026-01-06,AT0000XXXX,Example AG,BlackRock,1.23,net,
-2026-01-05,AT0000XXXX,Example AG,Vanguard,0.45,net,
-2026-01-04,AT0000XXXX,Example AG,BlackRock,1.18,net,
-2026-01-03,AT0000XXXX,Example AG,State Street,0.62,net,`;
+// Farben für Institutionen
+const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
 
-const lines = csvText.trim().split('\n');
-const headers = lines[0].split(',');
-const rows = lines.slice(1);
+async function loadCSV() {
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv');
+    if (!res.ok) throw new Error('CSV konnte nicht geladen werden');
+    const csvText = await res.text();
+    const lines = csvText.trim().split('\n');
+    const headers = lines[0].split(',');
+    const dataRows = lines.slice(1).map(l => l.split(','));
 
-const thead = document.querySelector('#shortTable thead');
-const tbody = document.querySelector('#shortTable tbody');
+    const table = document.getElementById('shortTable');
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
+    thead.innerHTML = '';
+    tbody.innerHTML = '';
 
-// Tabellenkopf
-const headerRow = document.createElement('tr');
-headers.forEach(header => {
-  const th = document.createElement('th');
-  th.textContent = header;
-  headerRow.appendChild(th);
-});
-thead.appendChild(headerRow);
+    // Tabelle Header
+    const headerRow = document.createElement('tr');
+    headers.forEach(h => {
+      const th = document.createElement('th');
+      th.textContent = h;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
 
-// Tabellenzeilen
-rows.forEach(line => {
-  const cols = line.split(',');
-  const tr = document.createElement('tr');
+    // Filter-Optionen sammeln
+    const companySet = new Set();
+    const holderSet = new Set();
 
-  cols.forEach(col => {
-    const td = document.createElement('td');
-    td.textContent = col;
-    tr.appendChild(td);
-  });
+    // Tabelle füllen
+    dataRows.forEach(cols => {
+      if (parseFloat(cols[4]) < 0.2) return; // Filter 0,2%
+      const tr = document.createElement('tr');
+      cols.forEach(c => {
+        const td = document.createElement('td');
+        td.textContent = c;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+      companySet.add(cols[2]);
+      holderSet.add(cols[3]);
+    });
 
-  tbody.appendChild(tr);
-});
+    // Filteroptionen füllen
+    const companyFilter = document.getElementById('companyFilter');
+    companySet.forEach(c => companyFilter.appendChild(new Option(c, c)));
+    const holderFilter = document.getElementById('holderFilter');
+    holderSet.forEach(h => holderFilter.appendChild(new Option(h, h)));
+
+    // Chart vorbereiten
+    const chartData = {};
+    dataRows.forEach(cols => {
+      const date = cols[0];
+      const company = cols[2];
+      const holder = cols[3];
+      const percent = parseFloat(cols[4]);
+      if (!chartData[company]) chartData[company] = {};
+      if (!chartData[company][holder]) chartData[company][holder] = [];
+      chartData[company][holder].push({ x: date, y: percent });
+    });
+
+    // Chart.js
+    const ctx = document.getElementById('shortChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [...new Set(dataRows.map(r => r[0]))],
+        datasets: Object.keys(chartData['Example AG'] || {}).map((holder, i) => ({
+          label: holder,
+          data: chartData['Example AG'][holder]?.map(d => d.y) || [],
+          backgroundColor: colors[i % colors.length]
+        }))
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'top' } },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, title: { display: true, text: 'Netto-Short (%)' } }
+        }
+      }
+    });
+
+    console.log('CSV + Chart geladen!');
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// Start
+loadCSV();
