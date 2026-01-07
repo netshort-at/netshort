@@ -1,4 +1,5 @@
-fetch('fma_test.csv')
+fetch('https://raw.githubusercontent.com/netshort-at/netshort/refs/heads/main/fma_test.csv')
+
   .then(response => response.text())
   .then(csvText => {
     const lines = csvText.trim().split('\n');
