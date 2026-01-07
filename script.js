@@ -1,4 +1,4 @@
-fetch('https://raw.githubusercontent.com/netshort-at/netshort/refs/heads/main/fma_test.csv')
+fetch('./fma_test.csv')
 
   .then(response => response.text())
   .then(csvText => {
