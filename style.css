@@ -1,34 +1,27 @@
-/* === Global === */
 body {
   font-family: 'Roboto', sans-serif;
+  color: #222;
+  background: #f5f5f5;
   margin: 0;
-  background: #f4f6f8;
-  color: #1f2933;
+  padding: 0;
 }
 
-/* === Header === */
 header {
   background: #0d1b2a;
   color: white;
-  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.logo {
-  font-weight: 700;
-  font-size: 1.2rem;
+  padding: 1rem 2rem;
 }
 
 header nav a {
   color: white;
-  text-decoration: none;
   margin-left: 1.5rem;
+  text-decoration: none;
   font-weight: 500;
 }
 
-/* === Layout === */
 main {
   max-width: 1200px;
   margin: auto;
@@ -39,14 +32,9 @@ h1, h2 {
   color: #0d1b2a;
 }
 
-/* === Hero === */
-#hero {
-  margin-bottom: 3rem;
-}
-
-/* === Table === */
 .table-container {
   overflow-x: auto;
+  margin-top: 1rem;
 }
 
 table {
@@ -57,22 +45,32 @@ table {
 
 th, td {
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #ddd;
   text-align: left;
 }
 
-thead {
-  background: #e9eef3;
+th {
+  background: #0d1b2a;
+  color: white;
+  position: sticky;
+  top: 0;
 }
 
-tbody tr:hover {
-  background: #f0f7ff;
+tr:nth-child(even) {
+  background: #f0f8ff;
 }
 
-/* === Footer === */
-footer {
-  text-align: center;
-  padding: 2rem;
-  font-size: 0.9rem;
-  color: #666;
+tr:hover {
+  background: #dbeeff;
+}
+
+.filters {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filters label {
+  font-weight: 500;
 }
