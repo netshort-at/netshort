@@ -1,229 +1,138 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<title>netshort.at – Österreichische Netto-Short-Positionen</title>
-<style>
-  body {
-    font-family: 'Roboto', sans-serif;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1rem;
-    background: #f5f5f5;
-    color: #222;
-  }
-
-  h1,h2 {
-    color: #0d1b2a;
-  }
-
-  header {
-    background:#0d1b2a;
-    color:white;
-    padding:1rem 2rem;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-  nav a {
-    color:white;
-    margin-left:1.5rem;
-    text-decoration:none;
-    font-weight:500;
-  }
-
-  .table-container {
-    overflow-x:auto;
-    margin-top:1rem;
-  }
-
-  table {
-    border-collapse: collapse;
-    width:100%;
-    background:white;
-  }
-  th, td {
-    padding:0.75rem 1rem;
-    border-bottom:1px solid #ddd;
-    text-align:left;
-  }
-  th {
-    background:#34495e;
-    color:white;
-    position: sticky;
-    top: 0;
-  }
-  tr:nth-child(even) { background:#f0f8ff; }
-  tr:hover { background:#d0e6f7; }
-
-  select {
-    padding:0.3rem 0.5rem;
-    margin-top:1rem;
-  }
-
-  canvas {
-    margin-top:2rem;
-  }
-
-  footer {
-    margin-top:2rem;
-    font-size:0.85rem;
-    color:#555;
-  }
-</style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>netshort.at – Österreichische Netto-Short-Positionen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      line-height: 1.6;
+      padding: 0 20px;
+      background-color: #f9f9f9;
+    }
+    h1, h2 {
+      color: #2c3e50;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    table, th, td {
+      border: 1px solid #34495e;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #34495e;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #ecf0f1;
+    }
+    .table-container {
+      overflow-x:auto;
+    }
+    canvas {
+      margin-top: 40px;
+      max-width: 100%;
+    }
+  </style>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  <h1>netshort.at</h1>
 
-<header>
-  <div class="logo">netshort.at</div>
-  <nav>
-    <a href="#table">Tabelle</a>
-    <a href="#charts">Charts</a>
-    <a href="#about">Über</a>
-  </nav>
-</header>
+  <p>Privates, nicht-kommerzielles Projekt im Aufbau.</p>
+  <p>Ziel ist die übersichtliche Darstellung österreichischer Netto-Short-Positionen auf Basis öffentlich zugänglicher FMA-Daten.</p>
+  <p>⚠️ Keine Anlageberatung. Datenquelle: FMA.</p>
+  <p>🚧 Entwicklung läuft – Inhalte folgen.</p>
 
-<main>
-<h1>Österreichische Netto-Short-Positionen</h1>
+  <section id="table">
+    <h2>Live-Tabelle – Netto-Short-Positionen</h2>
+    <div class="table-container">
+      <table id="shortTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
 
-<p>
-Privates, nicht-kommerzielles Projekt im Aufbau. Ziel: Transparente Darstellung von Netto-Short-Positionen auf Basis FMA-Daten.
-</p>
-<p>⚠️ Keine Anlageberatung. Datenquelle: FMA.</p>
-
-<section id="table">
-  <h2>Live-Tabelle</h2>
-  <label for="companyFilter">Filter nach Aktie:</label>
-  <select id="companyFilter">
-    <option value="all">Alle</option>
-  </select>
-  <div class="table-container">
-    <table id="shortTable">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</section>
-
-<section id="charts">
-  <h2>Historische Zeitreihen</h2>
-  <canvas id="shortChart"></canvas>
-</section>
-
-<section id="about">
-  <h2>Über netshort.at</h2>
-  <p>Projektziel: Transparente Darstellung von Netto-Short-Positionen in Österreich. Keine Anlageberatung.</p>
-</section>
-</main>
-
-<footer>
-<p>© 2026 netshort.at | Keine Anlageberatung | Datenquelle: FMA</p>
-</footer>
+  <section id="charts">
+    <h2>Historische Zeitreihen (Beispiel)</h2>
+    <canvas id="shortChart"></canvas>
+  </section>
 
 <script>
-const csvUrl = 'https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv';
-const table = document.getElementById('shortTable');
-const companyFilter = document.getElementById('companyFilter');
-let chartInstance;
+  // ===== Embedded CSV =====
+  const csvText = `Position Holder,Issuer,ISIN Code,Position Date,Net Short Position (%),Reporting Date,Cancellation Date
+Beispiel Holder 1,Testfirma A,AT0000XXX,2026-01-01,2.5,2026-01-02,-
+Beispiel Holder 2,Testfirma B,AT0000YYY,2026-01-02,1.8,2026-01-03,-
+Beispiel Holder 3,Testfirma C,AT0000ZZZ,2026-01-03,3.2,2026-01-04,-`;
 
-async function loadCSV() {
-  const response = await fetch(csvUrl);
-  const text = await response.text();
-  const rows = text.trim().split('\n');
-  const headers = rows[0].split(',');
-  const dataRows = rows.slice(1)
-    .map(r => r.split(','))
-    .filter(r => parseFloat(r[4]) >= 0.2); // Filter <0.2%
+  const lines = csvText.trim().split('\n');
+  const headers = lines[0].split(',');
+  const rows = lines.slice(1);
 
-  // Tabelle Header
+  // ===== Tabelle füllen =====
+  const table = document.getElementById('shortTable');
   const thead = table.querySelector('thead');
   const tbody = table.querySelector('tbody');
-  thead.innerHTML=''; tbody.innerHTML='';
-  const trHead = document.createElement('tr');
-  headers.forEach(h => { const th=document.createElement('th'); th.textContent=h; trHead.appendChild(th); });
-  thead.appendChild(trHead);
 
-  // Tabelle Rows
-  dataRows.forEach(cols => {
-    const tr=document.createElement('tr');
-    cols.forEach(c => { const td=document.createElement('td'); td.textContent=c; tr.appendChild(td); });
+  // Tabellenkopf
+  const headerRow = document.createElement('tr');
+  headers.forEach(h => {
+    const th = document.createElement('th');
+    th.textContent = h;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  // Tabellenzeilen
+  rows.forEach(line => {
+    const cols = line.split(',');
+    const tr = document.createElement('tr');
+    cols.forEach(col => {
+      const td = document.createElement('td');
+      td.textContent = col;
+      tr.appendChild(td);
+    });
     tbody.appendChild(tr);
   });
 
-  // Dropdown Filter
-  const companies = [...new Set(dataRows.map(r => r[2]))];
-  companyFilter.innerHTML = '<option value="all">Alle</option>';
-  companies.forEach(c => { const opt=document.createElement('option'); opt.value=c; opt.textContent=c; companyFilter.appendChild(opt); });
+  // ===== Chart.js vorbereiten =====
+  const chartLabels = rows.map(r => r.split(',')[3]); // Position Date
+  const chartData = rows.map(r => parseFloat(r.split(',')[4])); // Net Short Position (%)
+  const chartHolders = rows.map(r => r.split(',')[0]); // Holder
 
-  // Chart vorbereiten
-  const chartData = {};
-  dataRows.forEach(r=>{
-    const [date,,company,holder,percent] = r;
-    if(!chartData[company]) chartData[company]={dates:[], institutions:{}};
-    if(!chartData[company].institutions[holder]) chartData[company].institutions[holder]=[];
-    chartData[company].dates.push(date);
-    chartData[company].institutions[holder].push(parseFloat(percent));
-  });
-
-  renderChart(chartData, 'all');
-  
-  companyFilter.addEventListener('change', e => renderChart(chartData, e.target.value));
-}
-
-function renderChart(chartData, company='all'){
-  const ctx=document.getElementById('shortChart').getContext('2d');
-  if(chartInstance) chartInstance.destroy();
-
-  const labels = company==='all' ? Array.from(new Set(Object.values(chartData).flatMap(c=>c.dates))) : chartData[company].dates;
-  const datasets = [];
-  
-  if(company==='all'){
-    Object.entries(chartData).forEach(([comp, val])=>{
-      Object.entries(val.institutions).forEach(([holder, data])=>{
-        datasets.push({
-          label: `${comp} - ${holder}`,
-          data:data,
-          borderColor=randomColor(holder),
-          backgroundColor=randomColor(holder,0.5),
-          fill:true
-        });
-      });
-    });
-  } else {
-    Object.entries(chartData[company].institutions).forEach(([holder,data])=>{
-      datasets.push({
-        label: holder,
-        data:data,
-        borderColor:randomColor(holder),
-        backgroundColor:randomColor(holder,0.5),
-        fill:true
-      });
-    });
-  }
-
-  chartInstance = new Chart(ctx,{
-    type:'line',
-    data:{labels, datasets},
-    options:{
-      responsive:true,
-      plugins:{tooltip:{mode:'index', intersect:false}, legend:{position:'bottom'}},
-      interaction:{mode:'nearest', axis:'x', intersect:false},
-      scales:{y:{beginAtZero:true, title:{display:true,text:'Netto-Short (%)'}}}
+  const ctx = document.getElementById('shortChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: chartLabels,
+      datasets: [{
+        label: 'Netto-Short Position (%)',
+        data: chartData,
+        backgroundColor: 'rgba(52, 152, 219, 0.6)',
+        borderColor: 'rgba(52, 152, 219, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Netto-Short Position (%)' } },
+        x: { title: { display: true, text: 'Datum' } }
+      }
     }
   });
-}
-
-// einfache Farbgenerator
-const colorMap={};
-function randomColor(key, alpha=1){
-  if(colorMap[key]) return alpha===1 ? colorMap[key] : colorMap[key].replace('1)',`${alpha})`);
-  const r=Math.floor(Math.random()*200); const g=Math.floor(Math.random()*200); const b=Math.floor(Math.random()*200);
-  colorMap[key] = `rgba(${r},${g},${b},1)`;
-  return alpha===1 ? colorMap[key] : `rgba(${r},${g},${b},${alpha})`;
-}
-
-loadCSV();
 </script>
 
 </body>
