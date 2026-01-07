@@ -1,1 +1,78 @@
+/* === Global === */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background: #f4f6f8;
+  color: #1f2933;
+}
 
+/* === Header === */
+header {
+  background: #0d1b2a;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+header nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1.5rem;
+  font-weight: 500;
+}
+
+/* === Layout === */
+main {
+  max-width: 1200px;
+  margin: auto;
+  padding: 2rem;
+}
+
+h1, h2 {
+  color: #0d1b2a;
+}
+
+/* === Hero === */
+#hero {
+  margin-bottom: 3rem;
+}
+
+/* === Table === */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+thead {
+  background: #e9eef3;
+}
+
+tbody tr:hover {
+  background: #f0f7ff;
+}
+
+/* === Footer === */
+footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.9rem;
+  color: #666;
+}
