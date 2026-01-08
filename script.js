@@ -1,7 +1,5 @@
-let allData = [];
+let rawData = [];
 let chart;
-
-const colors = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc949'];
 
 fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv')
   .then(r => r.text())
@@ -9,14 +7,13 @@ fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv'
 
 function parseCSV(text) {
   const lines = text.trim().split('\n');
-  const headers = lines[0].split(',');
-  allData = lines.slice(1).map(l => {
+  rawData = lines.slice(1).map(l => {
     const c = l.split(',');
     return {
       holder: c[0],
       issuer: c[1],
       isin: c[2],
-      date: c[3],
+      date: new Date(c[3]),
       percent: parseFloat(c[4]),
       report: c[5],
       cancel: c[6]
@@ -28,81 +25,94 @@ function parseCSV(text) {
 }
 
 function initFilters() {
-  const companySet = [...new Set(allData.map(d => d.issuer))];
-  const holderSet = [...new Set(allData.map(d => d.holder))];
+  [...new Set(rawData.map(d => d.issuer))]
+    .forEach(v => companyFilter.add(new Option(v, v)));
 
-  companySet.forEach(c => companyFilter.add(new Option(c, c)));
-  holderSet.forEach(h => holderFilter.add(new Option(h, h)));
+  [...new Set(rawData.map(d => d.holder))]
+    .forEach(v => holderFilter.add(new Option(v, v)));
 
   companyFilter.onchange = holderFilter.onchange = render;
+  downloadCsv.onclick = downloadFilteredCSV;
 }
 
 function render() {
   const c = companyFilter.value;
   const h = holderFilter.value;
 
-  const data = allData.filter(d =>
-    (c === 'all' || d.issuer === c) &&
-    (h === 'all' || d.holder === h)
-  );
+  const data = rawData
+    .filter(d => (c === 'all' || d.issuer === c) &&
+                 (h === 'all' || d.holder === h))
+    .sort((a, b) => a.date - b.date);
 
   renderTable(data);
+  renderMetrics(data);
   renderChart(data);
 }
 
 function renderTable(data) {
-  const thead = shortTable.querySelector('thead');
-  const tbody = shortTable.querySelector('tbody');
-  thead.innerHTML = `
+  shortTable.tHead.innerHTML = `
     <tr>
       <th>Institution</th><th>Aktie</th><th>ISIN</th>
-      <th>Datum</th><th>Netto-Short (%)</th>
-      <th>Meldedatum</th><th>Cancellation</th>
+      <th>Datum</th><th>%</th><th>Meldedatum</th><th>Cancellation</th>
     </tr>`;
-  tbody.innerHTML = '';
 
-  data.forEach(d => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${d.holder}</td>
-        <td>${d.issuer}</td>
-        <td>${d.isin}</td>
-        <td>${d.date}</td>
-        <td>${d.percent}</td>
-        <td>${d.report}</td>
-        <td>${d.cancel || ''}</td>
-      </tr>`;
-  });
+  shortTable.tBodies[0].innerHTML = data.map(d => `
+    <tr>
+      <td>${d.holder}</td>
+      <td>${d.issuer}</td>
+      <td>${d.isin}</td>
+      <td>${d.date.toISOString().slice(0,10)}</td>
+      <td>${d.percent}</td>
+      <td>${d.report}</td>
+      <td>${d.cancel || ''}</td>
+    </tr>
+  `).join('');
+}
+
+function renderMetrics(data) {
+  if (!data.length) return;
+
+  const values = data.map(d => d.percent);
+  currentVal.textContent = values.at(-1).toFixed(2) + '%';
+  maxVal.textContent = Math.max(...values).toFixed(2) + '%';
+  minVal.textContent = Math.min(...values).toFixed(2) + '%';
+  trendVal.textContent =
+    values.at(-1) > values[0] ? 'steigend' :
+    values.at(-1) < values[0] ? 'fallend' : 'seitwärts';
 }
 
 function renderChart(data) {
-  const ctx = document.getElementById('shortChart');
-
   if (chart) chart.destroy();
 
-  const grouped = {};
-  data.forEach(d => {
-    if (!grouped[d.holder]) grouped[d.holder] = [];
-    grouped[d.holder].push({ x: d.date, y: d.percent });
-  });
-
-  chart = new Chart(ctx, {
+  chart = new Chart(shortChart, {
     type: 'line',
     data: {
-      datasets: Object.keys(grouped).map((h, i) => ({
-        label: h,
-        data: grouped[h],
-        borderColor: colors[i % colors.length],
+      datasets: [{
+        label: 'Netto-Short (%)',
+        data: data.map(d => ({ x: d.date, y: d.percent })),
+        borderColor: '#3366cc',
         tension: 0.2
-      }))
+      }]
     },
     options: {
-      responsive: true,
       parsing: false,
       scales: {
         x: { type: 'time', time: { unit: 'month' } },
-        y: { title: { display: true, text: 'Netto-Short (%)' } }
+        y: { title: { display: true, text: '%' } }
       }
     }
   });
+}
+
+function downloadFilteredCSV() {
+  const rows = [['Institution','Aktie','ISIN','Datum','%']];
+  document.querySelectorAll('#shortTable tbody tr').forEach(tr => {
+    rows.push([...tr.children].map(td => td.textContent));
+  });
+
+  const blob = new Blob([rows.map(r => r.join(',')).join('\n')]);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'netshort_filtered.csv';
+  a.click();
 }
