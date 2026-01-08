@@ -1,97 +1,108 @@
-const COLORS = [
-  '#4e79a7','#f28e2b','#e15759','#76b7b2',
-  '#59a14f','#edc948','#b07aa1'
-];
-
+let allData = [];
 let chart;
 
-async function loadCSV() {
-  const res = await fetch(
-    'https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv'
-  );
-  const text = await res.text();
+const colors = ['#4e79a7','#f28e2b','#e15759','#76b7b2','#59a14f','#edc949'];
 
+fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv')
+  .then(r => r.text())
+  .then(parseCSV);
+
+function parseCSV(text) {
   const lines = text.trim().split('\n');
   const headers = lines[0].split(',');
-  const rows = lines.slice(1).map(l => l.split(','));
+  allData = lines.slice(1).map(l => {
+    const c = l.split(',');
+    return {
+      holder: c[0],
+      issuer: c[1],
+      isin: c[2],
+      date: c[3],
+      percent: parseFloat(c[4]),
+      report: c[5],
+      cancel: c[6]
+    };
+  }).filter(d => d.percent >= 0.2);
 
-  const tableHead = document.querySelector('#shortTable thead');
-  const tableBody = document.querySelector('#shortTable tbody');
+  initFilters();
+  render();
+}
 
-  tableHead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
+function initFilters() {
+  const companySet = [...new Set(allData.map(d => d.issuer))];
+  const holderSet = [...new Set(allData.map(d => d.holder))];
 
-  const companySet = new Set();
-  const holderSet = new Set();
+  companySet.forEach(c => companyFilter.add(new Option(c, c)));
+  holderSet.forEach(h => holderFilter.add(new Option(h, h)));
 
-  rows.forEach(r => {
-    if (parseFloat(r[4]) >= 0.2) {
-      companySet.add(r[2]);
-      holderSet.add(r[0]);
-    }
+  companyFilter.onchange = holderFilter.onchange = render;
+}
+
+function render() {
+  const c = companyFilter.value;
+  const h = holderFilter.value;
+
+  const data = allData.filter(d =>
+    (c === 'all' || d.issuer === c) &&
+    (h === 'all' || d.holder === h)
+  );
+
+  renderTable(data);
+  renderChart(data);
+}
+
+function renderTable(data) {
+  const thead = shortTable.querySelector('thead');
+  const tbody = shortTable.querySelector('tbody');
+  thead.innerHTML = `
+    <tr>
+      <th>Institution</th><th>Aktie</th><th>ISIN</th>
+      <th>Datum</th><th>Netto-Short (%)</th>
+      <th>Meldedatum</th><th>Cancellation</th>
+    </tr>`;
+  tbody.innerHTML = '';
+
+  data.forEach(d => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${d.holder}</td>
+        <td>${d.issuer}</td>
+        <td>${d.isin}</td>
+        <td>${d.date}</td>
+        <td>${d.percent}</td>
+        <td>${d.report}</td>
+        <td>${d.cancel || ''}</td>
+      </tr>`;
   });
-
-  fillSelect('companyFilter', companySet);
-  fillSelect('holderFilter', holderSet);
-
-  document.getElementById('companyFilter').onchange = applyFilters;
-  document.getElementById('holderFilter').onchange = applyFilters;
-
-  function applyFilters() {
-    const company = companyFilter.value;
-    const holder = holderFilter.value;
-
-    const filtered = rows.filter(r =>
-      parseFloat(r[4]) >= 0.2 &&
-      (company === 'all' || r[2] === company) &&
-      (holder === 'all' || r[0] === holder)
-    );
-
-    tableBody.innerHTML = filtered.map(r =>
-      `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`
-    ).join('');
-
-    renderChart(filtered, company);
-  }
-
-  applyFilters();
 }
 
-function fillSelect(id, values) {
-  const sel = document.getElementById(id);
-  [...values].sort().forEach(v => sel.add(new Option(v, v)));
-}
+function renderChart(data) {
+  const ctx = document.getElementById('shortChart');
 
-function renderChart(rows, company) {
   if (chart) chart.destroy();
 
-  const dataByDate = {};
-  rows.forEach(r => {
-    if (company !== 'all' && r[2] !== company) return;
-    const date = r[3];
-    dataByDate[date] = (dataByDate[date] || 0) + parseFloat(r[4]);
+  const grouped = {};
+  data.forEach(d => {
+    if (!grouped[d.holder]) grouped[d.holder] = [];
+    grouped[d.holder].push({ x: d.date, y: d.percent });
   });
 
-  chart = new Chart(
-    document.getElementById('shortChart'),
-    {
-      type: 'line',
-      data: {
-        labels: Object.keys(dataByDate),
-        datasets: [{
-          label: 'Gesamt-Netto-Short (%)',
-          data: Object.values(dataByDate),
-          borderColor: '#111',
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { title: { display: true, text: '%' } }
-        }
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: Object.keys(grouped).map((h, i) => ({
+        label: h,
+        data: grouped[h],
+        borderColor: colors[i % colors.length],
+        tension: 0.2
+      }))
+    },
+    options: {
+      responsive: true,
+      parsing: false,
+      scales: {
+        x: { type: 'time', time: { unit: 'month' } },
+        y: { title: { display: true, text: 'Netto-Short (%)' } }
       }
     }
-  );
+  });
 }
-
-loadCSV();
