@@ -14,47 +14,40 @@
   </header>
 
   <main>
-    <section>
+    <section class="filters">
+      <label>Filter nach Aktie:
+        <select id="companyFilter"><option value="all">Alle</option></select>
+      </label>
+      <label>Filter nach Institution:
+        <select id="holderFilter"><option value="all">Alle</option></select>
+      </label>
+    </section>
+
+    <section class="table-section">
       <h2>Live-Tabelle – Netto-Short-Positionen</h2>
-      <div class="filters">
-        <label>Filter nach Aktie:
-          <select id="companyFilter">
-            <option value="all">Alle</option>
-          </select>
-        </label>
-        <label>Filter nach Institution:
-          <select id="holderFilter">
-            <option value="all">Alle</option>
-          </select>
-        </label>
-      </div>
       <table id="shortTable">
         <thead></thead>
         <tbody></tbody>
       </table>
     </section>
 
-    <section>
+    <section class="chart-section">
       <h2>Historische Zeitreihen</h2>
       <canvas id="shortChart"></canvas>
+      <div class="info-box">
+        <p><strong>Hinweise:</strong> Die Tabelle zeigt historische Netto-Short-Positionen. Meldeschwelle: 0,2 %. Short-Verbote in Finanzkrisen können historische Lücken erzeugen. Cancellation ≠ vollständige Beendigung. Dieses Projekt dient der Information, nicht als Anlageberatung. Inhalte können Fehler enthalten und sich jederzeit ändern.</p>
+      </div>
     </section>
 
-    <section>
+    <section class="about">
       <h2>Über netshort.at</h2>
-      <p>Projektziel: Transparente Darstellung von Netto-Short-Positionen in Österreich. Keine Anlageberatung. Daten basieren auf FMA-Meldungen.  
-      Inhalte können sich jederzeit ändern, unvollständig sein oder Fehler enthalten.</p>
-    </section>
-
-    <section>
-      <h2>Impressum</h2>
-      <p>Diese Website befindet sich derzeit im Aufbau und wird als privates, nicht-kommerzielles Projekt betrieben.  
-      Dieses Projekt dient ausschließlich Informations- und Lernzwecken und stellt keine Anlageberatung dar.  
-      Alle dargestellten Daten stammen aus öffentlich zugänglichen Quellen, insbesondere Veröffentlichungen der Finanzmarktaufsicht (FMA).  
-      Die Nutzung erfolgt auf eigene Verantwortung. Keine Haftung für Schäden.  
-      Dieses Projekt wurde mithilfe von KI (ChatGPT) erstellt.</p>
-      <p>© 2026 netshort.at | Keine Anlageberatung | Datenquelle: FMA</p>
+      <p>Projektziel: Transparente Darstellung von Netto-Short-Positionen in Österreich. Alle Daten stammen aus öffentlich zugänglichen Quellen (FMA). Dieses Projekt wurde mithilfe von KI (ChatGPT) erstellt.</p>
     </section>
   </main>
+
+  <footer>
+    <p>© 2026 netshort.at | Keine Anlageberatung | Datenquelle: FMA</p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
