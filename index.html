@@ -4,86 +4,57 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>netshort.at – Österreichische Netto-Short-Positionen</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <div class="logo">netshort.at</div>
-    <nav>
-      <a href="#table">Tabelle</a>
-      <a href="#charts">Charts</a>
-      <a href="#about">Über</a>
-    </nav>
+    <h1>netshort.at</h1>
+    <p>Transparente Darstellung von Short-Positionen österreichischer Unternehmen. Historische Zeitreihen und institutionelle Anteile.</p>
   </header>
 
   <main>
-    <section id="hero">
-      <h1>Österreichische Netto-Short-Positionen</h1>
-      <p>Transparente Darstellung von Short-Positionen österreichischer Unternehmen. Historische Zeitreihen und institutionelle Anteile.</p>
-    </section>
-
-    <section id="table">
+    <section>
       <h2>Live-Tabelle – Netto-Short-Positionen</h2>
       <div class="filters">
         <label>Filter nach Aktie:
-          <select id="companyFilter"><option value="all">Alle</option></select>
+          <select id="companyFilter">
+            <option value="all">Alle</option>
+          </select>
         </label>
         <label>Filter nach Institution:
-          <select id="holderFilter"><option value="all">Alle</option></select>
+          <select id="holderFilter">
+            <option value="all">Alle</option>
+          </select>
         </label>
       </div>
-      <div class="table-container">
-        <table id="shortTable">
-          <thead></thead>
-          <tbody></tbody>
-        </table>
-      </div>
+      <table id="shortTable">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
     </section>
 
-    <section id="charts">
+    <section>
       <h2>Historische Zeitreihen</h2>
       <canvas id="shortChart"></canvas>
     </section>
 
-    <section id="about">
+    <section>
       <h2>Über netshort.at</h2>
-      <p>Projektziel: Transparente Darstellung von Netto-Short-Positionen in Österreich. Keine Anlageberatung. Daten basieren auf FMA-Meldungen.</p>
-  <section id="impressum">
-  <h2>Impressum</h2>
+      <p>Projektziel: Transparente Darstellung von Netto-Short-Positionen in Österreich. Keine Anlageberatung. Daten basieren auf FMA-Meldungen.  
+      Inhalte können sich jederzeit ändern, unvollständig sein oder Fehler enthalten.</p>
+    </section>
 
-  <p>
-    Diese Website befindet sich derzeit im Aufbau und wird als privates,
-    nicht-kommerzielles Projekt betrieben.
-  </p>
-
-  <p>
-    Dieses Projekt dient ausschließlich Informations- und Lernzwecken.
-    Es stellt keine Anlageberatung dar und erhebt keinen Anspruch auf
-    Vollständigkeit, Aktualität oder Richtigkeit der dargestellten Inhalte.
-  </p>
-
-  <p>
-    Alle dargestellten Daten stammen aus öffentlich zugänglichen Quellen,
-    insbesondere Veröffentlichungen der Finanzmarktaufsicht (FMA).
-  </p>
-
-  <p>
-    Die Nutzung der Inhalte erfolgt auf eigene Verantwortung.
-    Eine Haftung für materielle oder immaterielle Schäden,
-    die aus der Nutzung der bereitgestellten Informationen entstehen,
-    ist ausgeschlossen.
-  </p>
-</section>
-
-
+    <section>
+      <h2>Impressum</h2>
+      <p>Diese Website befindet sich derzeit im Aufbau und wird als privates, nicht-kommerzielles Projekt betrieben.  
+      Dieses Projekt dient ausschließlich Informations- und Lernzwecken und stellt keine Anlageberatung dar.  
+      Alle dargestellten Daten stammen aus öffentlich zugänglichen Quellen, insbesondere Veröffentlichungen der Finanzmarktaufsicht (FMA).  
+      Die Nutzung erfolgt auf eigene Verantwortung. Keine Haftung für Schäden.  
+      Dieses Projekt wurde mithilfe von KI (ChatGPT) erstellt.</p>
+      <p>© 2026 netshort.at | Keine Anlageberatung | Datenquelle: FMA</p>
     </section>
   </main>
-
-  <footer>
-    <p>© 2026 netshort.at | Keine Anlageberatung | Datenquelle: FMA</p>
-  </footer>
 
   <script src="script.js"></script>
 </body>
