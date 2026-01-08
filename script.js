@@ -1,7 +1,4 @@
-// Farben für Institutionen
 const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
-
-let chart; // globale Chart-Variable
 
 async function loadCSV() {
   try {
@@ -27,13 +24,13 @@ async function loadCSV() {
     });
     thead.appendChild(headerRow);
 
-    // Filter-Optionen sammeln
+    // Filter Sets
     const companySet = new Set();
     const holderSet = new Set();
 
-    const filteredData = dataRows.filter(cols => parseFloat(cols[4]) >= 0.2);
-
-    filteredData.forEach(cols => {
+    // Tabelle füllen + Filter Sets
+    dataRows.forEach(cols => {
+      if (parseFloat(cols[4]) < 0.2) return;
       const tr = document.createElement('tr');
       cols.forEach(c => {
         const td = document.createElement('td');
@@ -41,8 +38,8 @@ async function loadCSV() {
         tr.appendChild(td);
       });
       tbody.appendChild(tr);
-      companySet.add(cols[2]);
-      holderSet.add(cols[3]);
+      companySet.add(cols[2]); // Issuer
+      holderSet.add(cols[1]);  // Holder
     });
 
     // Filteroptionen füllen
@@ -51,51 +48,98 @@ async function loadCSV() {
     const holderFilter = document.getElementById('holderFilter');
     holderSet.forEach(h => holderFilter.appendChild(new Option(h, h)));
 
-    // Chart-Daten aufbereiten
-    const chartData = {};
-    filteredData.forEach(cols => {
-      const date = cols[0];
-      const company = cols[2];
-      const holder = cols[3];
-      const percent = parseFloat(cols[4]);
-      if (!chartData[company]) chartData[company] = {};
-      if (!chartData[company][holder]) chartData[company][holder] = [];
-      chartData[company][holder].push({ x: date, y: percent });
-    });
+    // Event-Listener für Filter
+    companyFilter.addEventListener('change', applyFilters);
+    holderFilter.addEventListener('change', applyFilters);
 
-    // Chart initialisieren
-    const ctx = document.getElementById('shortChart').getContext('2d');
+    // Chart vorbereiten
+    let chart;
+    function renderChart(filteredRows) {
+      const chartData = {};
+      filteredRows.forEach(cols => {
+        const date = cols[0];
+        const company = cols[2];
+        const holder = cols[1];
+        const percent = parseFloat(cols[4]);
+        if (!chartData[company]) chartData[company] = {};
+        if (!chartData[company][holder]) chartData[company][holder] = [];
+        chartData[company][holder].push({ x: date, y: percent });
+      });
 
-    if (chart) chart.destroy(); // alte Chart löschen
+      const selectedCompany = companyFilter.value === 'all' ? [...companySet][0] : companyFilter.value;
+      const datasets = Object.keys(chartData[selectedCompany] || {}).map((holder, i) => ({
+        label: holder,
+        data: chartData[selectedCompany][holder].map(d => ({x: d.x, y: d.y})),
+        backgroundColor: colors[i % colors.length],
+        type: 'bar',
+        stack: 'stack1'
+      }));
 
-    const selectedCompany = companyFilter.value || 'all';
-    const displayCompany = selectedCompany === 'all' ? Array.from(companySet)[0] : selectedCompany;
+      const totalDataset = {
+        label: 'Gesamtposition',
+        data: Object.keys(chartData[selectedCompany] || {}).map(holder =>
+          chartData[selectedCompany][holder].map(d => ({x: d.x, y: d.y}))
+        ).flat().reduce((acc, val) => {
+          const existing = acc.find(e => e.x === val.x);
+          if (existing) existing.y += val.y; else acc.push({x: val.x, y: val.y});
+          return acc;
+        }, []),
+        borderColor: '#1a1f36',
+        type: 'line',
+        fill: false,
+        tension: 0.3
+      };
 
-    chart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: [...new Set(filteredData.map(r => r[0]))],
-        datasets: Object.keys(chartData[displayCompany] || {}).map((holder, i) => ({
-          label: holder,
-          data: chartData[displayCompany][holder].map(d => d.y),
-          backgroundColor: colors[i % colors.length]
-        }))
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'top' } },
-        scales: {
-          x: { stacked: true },
-          y: { stacked: true, title: { display: true, text: 'Netto-Short (%)' } }
+      if(chart) chart.destroy();
+      const ctx = document.getElementById('shortChart').getContext('2d');
+      chart = new Chart(ctx, {
+        data: {
+          datasets: [...datasets, totalDataset]
+        },
+        options: {
+          responsive: true,
+          parsing: {
+            xAxisKey: 'x',
+            yAxisKey: 'y'
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: { parser: 'YYYY-MM-DD', tooltipFormat: 'll', unit: 'month' },
+              title: { display: true, text: 'Datum' }
+            },
+            y: {
+              stacked: true,
+              title: { display: true, text: 'Netto-Short (%)' }
+            }
+          },
+          plugins: { legend: { position: 'top' } }
         }
-      }
-    });
+      });
+    }
 
-    // Live-Filter
-    companyFilter.addEventListener('change', () => loadCSV());
-    holderFilter.addEventListener('change', () => loadCSV());
+    function applyFilters() {
+      const companyVal = companyFilter.value;
+      const holderVal = holderFilter.value;
+      const filtered = dataRows.filter(cols => {
+        if (parseFloat(cols[4]) < 0.2) return false;
+        if (companyVal !== 'all' && cols[2] !== companyVal) return false;
+        if (holderVal !== 'all' && cols[1] !== holderVal) return false;
+        return true;
+      });
+      tbody.innerHTML = '';
+      filtered.forEach(cols => {
+        const tr = document.createElement('tr');
+        cols.forEach(c => { const td = document.createElement('td'); td.textContent = c; tr.appendChild(td); });
+        tbody.appendChild(tr);
+      });
+      renderChart(filtered);
+    }
 
-    console.log('CSV + Chart geladen!');
+    // Initial Render
+    applyFilters();
+
+    console.log('CSV geladen und Chart gerendert!');
   } catch (err) {
     console.error(err);
   }
