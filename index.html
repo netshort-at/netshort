@@ -1,54 +1,87 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
   <title>netshort.at – Österreichische Netto-Short-Positionen</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header>
-    <h1>netshort.at</h1>
-    <p>Transparente Darstellung von Short-Positionen österreichischer Unternehmen. Historische Zeitreihen und institutionelle Anteile.</p>
-  </header>
 
-  <main>
-    <section class="filters">
-      <label>Filter nach Aktie:
-        <select id="companyFilter"><option value="all">Alle</option></select>
-      </label>
-      <label>Filter nach Institution:
-        <select id="holderFilter"><option value="all">Alle</option></select>
-      </label>
-    </section>
+<header>
+  <h1>netshort.at</h1>
+  <p>Transparente Übersicht österreichischer Netto-Short-Positionen (FMA-Daten)</p>
+</header>
 
-    <section class="table-section">
-      <h2>Live-Tabelle – Netto-Short-Positionen</h2>
-      <table id="shortTable">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
-    </section>
+<main>
 
-    <section class="chart-section">
-      <h2>Historische Zeitreihen</h2>
-      <canvas id="shortChart"></canvas>
-      <div class="info-box">
-        <p><strong>Hinweise:</strong> Die Tabelle zeigt historische Netto-Short-Positionen. Meldeschwelle: 0,2 %. Short-Verbote in Finanzkrisen können historische Lücken erzeugen. Cancellation ≠ vollständige Beendigung. Dieses Projekt dient der Information, nicht als Anlageberatung. Inhalte können Fehler enthalten und sich jederzeit ändern.</p>
-      </div>
-    </section>
+<section class="filters">
+  <label>
+    Aktie
+    <select id="companyFilter">
+      <option value="all">Alle</option>
+    </select>
+  </label>
 
-    <section class="about">
-      <h2>Über netshort.at</h2>
-      <p>Projektziel: Transparente Darstellung von Netto-Short-Positionen in Österreich. Alle Daten stammen aus öffentlich zugänglichen Quellen (FMA). Dieses Projekt wurde mithilfe von KI (ChatGPT) erstellt.</p>
-    </section>
-  </main>
+  <label>
+    Institution
+    <select id="holderFilter">
+      <option value="all">Alle</option>
+    </select>
+  </label>
+</section>
 
-  <footer>
-    <p>© 2026 netshort.at | Keine Anlageberatung | Datenquelle: FMA</p>
-  </footer>
+<section>
+  <h2>Live-Tabelle – Netto-Short-Positionen</h2>
+  <table id="shortTable">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</section>
 
-  <script src="script.js"></script>
+<section class="chart-section">
+  <h2>Historischer Verlauf</h2>
+  <canvas id="shortChart"></canvas>
+
+  <div class="info-box">
+    <strong>Hinweise zur Interpretation</strong>
+    <ul>
+      <li>Meldeschwelle: ≥ 0,2 % Netto-Short-Position</li>
+      <li>Positionen unterhalb der Schwelle sind nicht sichtbar</li>
+      <li>„Cancellation“ bedeutet keine Garantie für vollständige Glattstellung</li>
+      <li>Short-Verbote (z. B. in Krisenzeiten) können historische Lücken verursachen</li>
+      <li>Dieses Tool dient ausschließlich der Information – keine Anlageberatung</li>
+    </ul>
+  </div>
+</section>
+
+<section class="about">
+  <h2>Über netshort.at</h2>
+  <p>
+    netshort.at ist ein privates, nicht-kommerzielles Analyse- und Informationsprojekt.
+    Ziel ist eine strukturierte und transparente Aufbereitung öffentlich zugänglicher
+    Netto-Short-Positionen in Österreich auf Basis von FMA-Veröffentlichungen.
+  </p>
+</section>
+
+</main>
+
+<footer>
+  <h3>Impressum</h3>
+  <p>
+    Privates, nicht-kommerzielles Projekt. Keine Anlageberatung.
+    Alle Inhalte ohne Gewähr auf Vollständigkeit, Aktualität oder Richtigkeit.
+    Inhalte und Funktionen können sich jederzeit ändern.
+  </p>
+  <p>
+    Datenquelle: Finanzmarktaufsicht (FMA)<br />
+    Dieses Projekt wurde mithilfe von KI (ChatGPT) erstellt.
+  </p>
+  <p>© 2026 netshort.at</p>
+</footer>
+
+<script src="script.js"></script>
 </body>
 </html>
