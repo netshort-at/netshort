@@ -1,101 +1,83 @@
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background: #f4f5f7;
-  color: #1a1a1a;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #ffffff;
+  color: #111;
 }
 
-/* HEADER */
-.site-header {
-  background: #0f1115;
-  border-bottom: 1px solid #2a2d33;
+header {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
 }
 
-.header-inner {
-  max-width: 1200px;
-  margin: auto;
-  padding: 18px 20px;
-}
-
-.site-header h1 {
+header h1 {
   margin: 0;
-  font-size: 1.9rem;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 2rem;
 }
 
-.subtitle {
-  margin-top: 4px;
-  font-size: 0.9rem;
-  color: #b5b8c0;
+header p {
+  margin: 4px 0 0;
+  color: #555;
 }
 
-/* LAYOUT */
-.container {
+main {
   max-width: 1200px;
   margin: auto;
-  padding: 24px 20px;
+  padding: 20px;
 }
 
-h2 {
-  margin-top: 40px;
-  font-size: 1.3rem;
-}
-
-/* FILTER */
 .filters {
   display: flex;
   gap: 20px;
+  align-items: flex-end;
   margin-bottom: 20px;
 }
 
 .filters label {
-  display: flex;
-  flex-direction: column;
   font-size: 0.85rem;
-  color: #444;
 }
 
-select {
+select, button {
   padding: 6px;
   font-size: 0.9rem;
 }
 
-/* TABLE */
+.metrics {
+  display: flex;
+  gap: 30px;
+  margin: 20px 0;
+  font-size: 0.9rem;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-th, td {
-  padding: 8px 10px;
-  border-bottom: 1px solid #e0e0e0;
   font-size: 0.85rem;
 }
 
-th {
-  background: #f0f1f3;
+th, td {
+  border-bottom: 1px solid #e0e0e0;
+  padding: 8px;
   text-align: left;
 }
 
-tr:hover {
-  background: #f7f8fa;
+th {
+  background: #f7f7f7;
 }
 
-/* INFO */
+tr:hover {
+  background: #fafafa;
+}
+
 .info ul {
   padding-left: 20px;
-  color: #444;
 }
 
-/* FOOTER */
 footer {
+  border-top: 1px solid #ddd;
   margin-top: 60px;
-  padding: 20px;
-  background: #0f1115;
-  color: #aaa;
-  font-size: 0.8rem;
+  padding: 15px;
+  font-size: 0.75rem;
+  color: #555;
   text-align: center;
 }
