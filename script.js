@@ -1,149 +1,97 @@
-const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'];
+const COLORS = [
+  '#4e79a7','#f28e2b','#e15759','#76b7b2',
+  '#59a14f','#edc948','#b07aa1'
+];
+
+let chart;
 
 async function loadCSV() {
-  try {
-    const res = await fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv');
-    if (!res.ok) throw new Error('CSV konnte nicht geladen werden');
-    const csvText = await res.text();
-    const lines = csvText.trim().split('\n');
-    const headers = lines[0].split(',');
-    const dataRows = lines.slice(1).map(l => l.split(','));
+  const res = await fetch(
+    'https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv'
+  );
+  const text = await res.text();
 
-    const table = document.getElementById('shortTable');
-    const thead = table.querySelector('thead');
-    const tbody = table.querySelector('tbody');
-    thead.innerHTML = '';
-    tbody.innerHTML = '';
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',');
+  const rows = lines.slice(1).map(l => l.split(','));
 
-    // Tabelle Header
-    const headerRow = document.createElement('tr');
-    headers.forEach(h => {
-      const th = document.createElement('th');
-      th.textContent = h;
-      headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
+  const tableHead = document.querySelector('#shortTable thead');
+  const tableBody = document.querySelector('#shortTable tbody');
 
-    // Filter Sets
-    const companySet = new Set();
-    const holderSet = new Set();
+  tableHead.innerHTML = '<tr>' + headers.map(h => `<th>${h}</th>`).join('') + '</tr>';
 
-    // Tabelle füllen + Filter Sets
-    dataRows.forEach(cols => {
-      if (parseFloat(cols[4]) < 0.2) return;
-      const tr = document.createElement('tr');
-      cols.forEach(c => {
-        const td = document.createElement('td');
-        td.textContent = c;
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-      companySet.add(cols[2]); // Issuer
-      holderSet.add(cols[1]);  // Holder
-    });
+  const companySet = new Set();
+  const holderSet = new Set();
 
-    // Filteroptionen füllen
-    const companyFilter = document.getElementById('companyFilter');
-    companySet.forEach(c => companyFilter.appendChild(new Option(c, c)));
-    const holderFilter = document.getElementById('holderFilter');
-    holderSet.forEach(h => holderFilter.appendChild(new Option(h, h)));
-
-    // Event-Listener für Filter
-    companyFilter.addEventListener('change', applyFilters);
-    holderFilter.addEventListener('change', applyFilters);
-
-    // Chart vorbereiten
-    let chart;
-    function renderChart(filteredRows) {
-      const chartData = {};
-      filteredRows.forEach(cols => {
-        const date = cols[0];
-        const company = cols[2];
-        const holder = cols[1];
-        const percent = parseFloat(cols[4]);
-        if (!chartData[company]) chartData[company] = {};
-        if (!chartData[company][holder]) chartData[company][holder] = [];
-        chartData[company][holder].push({ x: date, y: percent });
-      });
-
-      const selectedCompany = companyFilter.value === 'all' ? [...companySet][0] : companyFilter.value;
-      const datasets = Object.keys(chartData[selectedCompany] || {}).map((holder, i) => ({
-        label: holder,
-        data: chartData[selectedCompany][holder].map(d => ({x: d.x, y: d.y})),
-        backgroundColor: colors[i % colors.length],
-        type: 'bar',
-        stack: 'stack1'
-      }));
-
-      const totalDataset = {
-        label: 'Gesamtposition',
-        data: Object.keys(chartData[selectedCompany] || {}).map(holder =>
-          chartData[selectedCompany][holder].map(d => ({x: d.x, y: d.y}))
-        ).flat().reduce((acc, val) => {
-          const existing = acc.find(e => e.x === val.x);
-          if (existing) existing.y += val.y; else acc.push({x: val.x, y: val.y});
-          return acc;
-        }, []),
-        borderColor: '#1a1f36',
-        type: 'line',
-        fill: false,
-        tension: 0.3
-      };
-
-      if(chart) chart.destroy();
-      const ctx = document.getElementById('shortChart').getContext('2d');
-      chart = new Chart(ctx, {
-        data: {
-          datasets: [...datasets, totalDataset]
-        },
-        options: {
-          responsive: true,
-          parsing: {
-            xAxisKey: 'x',
-            yAxisKey: 'y'
-          },
-          scales: {
-            x: {
-              type: 'time',
-              time: { parser: 'YYYY-MM-DD', tooltipFormat: 'll', unit: 'month' },
-              title: { display: true, text: 'Datum' }
-            },
-            y: {
-              stacked: true,
-              title: { display: true, text: 'Netto-Short (%)' }
-            }
-          },
-          plugins: { legend: { position: 'top' } }
-        }
-      });
+  rows.forEach(r => {
+    if (parseFloat(r[4]) >= 0.2) {
+      companySet.add(r[2]);
+      holderSet.add(r[0]);
     }
+  });
 
-    function applyFilters() {
-      const companyVal = companyFilter.value;
-      const holderVal = holderFilter.value;
-      const filtered = dataRows.filter(cols => {
-        if (parseFloat(cols[4]) < 0.2) return false;
-        if (companyVal !== 'all' && cols[2] !== companyVal) return false;
-        if (holderVal !== 'all' && cols[1] !== holderVal) return false;
-        return true;
-      });
-      tbody.innerHTML = '';
-      filtered.forEach(cols => {
-        const tr = document.createElement('tr');
-        cols.forEach(c => { const td = document.createElement('td'); td.textContent = c; tr.appendChild(td); });
-        tbody.appendChild(tr);
-      });
-      renderChart(filtered);
-    }
+  fillSelect('companyFilter', companySet);
+  fillSelect('holderFilter', holderSet);
 
-    // Initial Render
-    applyFilters();
+  document.getElementById('companyFilter').onchange = applyFilters;
+  document.getElementById('holderFilter').onchange = applyFilters;
 
-    console.log('CSV geladen und Chart gerendert!');
-  } catch (err) {
-    console.error(err);
+  function applyFilters() {
+    const company = companyFilter.value;
+    const holder = holderFilter.value;
+
+    const filtered = rows.filter(r =>
+      parseFloat(r[4]) >= 0.2 &&
+      (company === 'all' || r[2] === company) &&
+      (holder === 'all' || r[0] === holder)
+    );
+
+    tableBody.innerHTML = filtered.map(r =>
+      `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`
+    ).join('');
+
+    renderChart(filtered, company);
   }
+
+  applyFilters();
 }
 
-// Start
+function fillSelect(id, values) {
+  const sel = document.getElementById(id);
+  [...values].sort().forEach(v => sel.add(new Option(v, v)));
+}
+
+function renderChart(rows, company) {
+  if (chart) chart.destroy();
+
+  const dataByDate = {};
+  rows.forEach(r => {
+    if (company !== 'all' && r[2] !== company) return;
+    const date = r[3];
+    dataByDate[date] = (dataByDate[date] || 0) + parseFloat(r[4]);
+  });
+
+  chart = new Chart(
+    document.getElementById('shortChart'),
+    {
+      type: 'line',
+      data: {
+        labels: Object.keys(dataByDate),
+        datasets: [{
+          label: 'Gesamt-Netto-Short (%)',
+          data: Object.values(dataByDate),
+          borderColor: '#111',
+          tension: 0.3
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { title: { display: true, text: '%' } }
+        }
+      }
+    }
+  );
+}
+
 loadCSV();
