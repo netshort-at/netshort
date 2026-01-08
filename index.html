@@ -1,85 +1,84 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>netshort.at – Österreichische Netto-Short-Positionen</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 <body>
 
-<header class="site-header">
-  <div class="header-inner">
-    <h1>netshort.at</h1>
-    <div class="subtitle">
-      Österreichische Netto-Short-Positionen · FMA-Meldedaten · Historische Übersicht
-    </div>
-  </div>
+<header>
+  <h1>netshort.at</h1>
+  <p>Österreichische Netto-Short-Positionen · FMA-Meldedaten · Historische Übersicht</p>
 </header>
 
-<main class="container">
+<main>
 
-  <section class="filters">
-    <label>
-      Aktie
-      <select id="companyFilter">
-        <option value="all">Alle</option>
-      </select>
-    </label>
+<section class="filters">
+  <label>Aktie
+    <select id="companyFilter">
+      <option value="all">Alle</option>
+    </select>
+  </label>
 
-    <label>
-      Institution
-      <select id="holderFilter">
-        <option value="all">Alle</option>
-      </select>
-    </label>
-  </section>
+  <label>Institution
+    <select id="holderFilter">
+      <option value="all">Alle</option>
+    </select>
+  </label>
 
-  <section>
-    <h2>Live-Tabelle – Netto-Short-Positionen</h2>
-    <table id="shortTable">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </section>
+  <button id="downloadCsv">CSV herunterladen</button>
+</section>
 
-  <section>
-    <h2>Historische Zeitreihe</h2>
-    <canvas id="shortChart" height="120"></canvas>
-  </section>
+<section class="metrics">
+  <div><strong>Aktuell:</strong> <span id="currentVal">–</span></div>
+  <div><strong>Maximum:</strong> <span id="maxVal">–</span></div>
+  <div><strong>Minimum:</strong> <span id="minVal">–</span></div>
+  <div><strong>Trend:</strong> <span id="trendVal">–</span></div>
+</section>
 
-  <section class="info">
-    <h2>Hinweise zur Dateninterpretation</h2>
-    <ul>
-      <li>Meldeschwelle gemäß EU-SSR: ≥ 0,2 % des Grundkapitals</li>
-      <li>Positionen unterhalb der Schwelle sind nicht sichtbar</li>
-      <li>Cancellation bedeutet nicht zwingend vollständige Eindeckung</li>
-      <li>Short-Verbote (z. B. Finanzkrisen) können historische Lücken verursachen</li>
-      <li>Dieses Tool dient der Übersicht, nicht der Anlageberatung</li>
-    </ul>
-  </section>
+<section>
+  <h2>Live-Tabelle – Netto-Short-Positionen</h2>
+  <table id="shortTable">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
+</section>
 
-  <section class="about">
-    <h2>Über netshort.at</h2>
-    <p>
-      netshort.at stellt österreichische Netto-Short-Positionen auf Basis öffentlich
-      zugänglicher Meldungen der Finanzmarktaufsicht (FMA) dar.
-      Ziel ist eine transparente, nachvollziehbare Übersicht historischer Entwicklungen.
-    </p>
-  </section>
+<section>
+  <h2>Historischer Verlauf</h2>
+  <canvas id="shortChart" height="120"></canvas>
+</section>
+
+<section class="info">
+  <h2>Hinweise</h2>
+  <ul>
+    <li>Meldeschwelle: ≥ 0,2 %</li>
+    <li>Positionen unterhalb der Schwelle sind nicht sichtbar</li>
+    <li>Cancellation ≠ vollständige Eindeckung</li>
+    <li>Short-Verbote können Datenlücken verursachen</li>
+    <li>Tool dient der Übersicht – keine Anlageberatung</li>
+  </ul>
+</section>
+
+<section class="about">
+  <h2>Über netshort.at</h2>
+  <p>
+    Privates, nicht-kommerzielles Analyseprojekt auf Basis öffentlich
+    zugänglicher FMA-Daten. Inhalte können unvollständig oder fehlerhaft sein.
+  </p>
+</section>
 
 </main>
 
 <footer>
   <p>
-    Diese Website befindet sich im Aufbau und wird als privates, nicht-kommerzielles Projekt betrieben.
-    Inhalte können unvollständig sein oder Fehler enthalten und sich jederzeit ändern.
-    Keine Anlageberatung, keine Haftung, kein Anspruch auf Vollständigkeit oder Aktualität.
+    Keine Anlageberatung · Keine Haftung · Kein Anspruch auf Vollständigkeit oder Aktualität  
+    · Projekt im Aufbau · Erstellt mit Unterstützung von KI (ChatGPT)
   </p>
-  <p>
-    Datenquelle: FMA · Projekt erstellt mit Unterstützung von KI (ChatGPT)
-  </p>
-  <p>© 2026 netshort.at</p>
+  <p>© 2026 netshort.at | Datenquelle: FMA</p>
 </footer>
 
 <script src="script.js"></script>
