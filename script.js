@@ -4,6 +4,9 @@ const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b'
 // Rohdaten global speichern
 let rawData = [];
 
+// Globaler Chart
+let shortChart = null;
+
 async function loadCSV() {
   try {
     const res = await fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv');
@@ -83,11 +86,12 @@ async function loadCSV() {
     holderFilter.addEventListener('change', applyFilters);
 
     // -----------------------------
-    // Chart (noch statisch / Platzhalter)
+    // Initialer Chart (erste Aktie)
     // -----------------------------
-    buildStaticChart(dataRows);
+    const firstISIN = companyFilter.value;
+    if (firstISIN !== 'all') renderChart(firstISIN);
 
-    console.log('CSV geladen – Live-Filter aktiv');
+    console.log('CSV geladen – Live-Filter + dynamischer Chart aktiv');
   } catch (err) {
     console.error(err);
   }
@@ -135,49 +139,72 @@ function applyFilters() {
   });
 
   renderTable(filtered);
+
+  // Chart nur aktualisieren, wenn eine Aktie ausgewählt wurde
+  if (companyValue !== 'all') {
+    renderChart(companyValue);
+  }
 }
 
 // ---------------------------------
-// Statischer Chart (Platzhalter)
+// Dynamischer Chart
 // ---------------------------------
-function buildStaticChart(dataRows) {
+function renderChart(selectedISIN) {
+  // Filter für die aktuelle Aktie
+  const filtered = rawData.filter(cols => {
+    const isin = cols[2];
+    return isin === selectedISIN && parseFloat(cols[4]) >= 0.2;
+  });
+
+  // Daten pro Institution vorbereiten
   const chartData = {};
-  dataRows.forEach(cols => {
+  filtered.forEach(cols => {
     const date = cols[0];
-    const issuer = cols[1];
     const holder = cols[3];
     const percent = parseFloat(cols[4]);
 
-    if (!chartData[issuer]) chartData[issuer] = {};
-    if (!chartData[issuer][holder]) chartData[issuer][holder] = [];
-    chartData[issuer][holder].push({ x: date, y: percent });
+    if (!chartData[holder]) chartData[holder] = [];
+    chartData[holder].push({ x: date, y: percent });
   });
 
-  const exampleCompany = Object.keys(chartData)[0];
-  if (!exampleCompany) return;
-
   const ctx = document.getElementById('shortChart').getContext('2d');
-  new Chart(ctx, {
+
+  // Wenn Chart existiert, zuerst zerstören
+  if (shortChart) shortChart.destroy();
+
+  // Neue Datasets bauen
+  const datasets = Object.keys(chartData).map((holder, i) => ({
+    label: holder,
+    data: chartData[holder].map(d => d.y),
+    backgroundColor: colors[i % colors.length]
+  }));
+
+  const labels = [...new Set(filtered.map(r => r[0]))].sort();
+
+  shortChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: [...new Set(dataRows.map(r => r[0]))],
-      datasets: Object.keys(chartData[exampleCompany]).map((holder, i) => ({
-        label: holder,
-        data: chartData[exampleCompany][holder].map(d => d.y),
-        backgroundColor: colors[i % colors.length]
-      }))
+      labels,
+      datasets
     },
     options: {
       responsive: true,
       plugins: {
-        legend: { position: 'top' }
+        legend: { position: 'top' },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const holder = context.dataset.label;
+              const value = context.raw;
+              const date = context.label;
+              return `${holder}: ${value}% (${date})`;
+            }
+          }
+        }
       },
       scales: {
         x: { stacked: true },
-        y: {
-          stacked: true,
-          title: { display: true, text: 'Netto-Short (%)' }
-        }
+        y: { stacked: true, title: { display: true, text: 'Netto-Short (%)' } }
       }
     }
   });
