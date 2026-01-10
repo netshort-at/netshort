@@ -1,29 +1,38 @@
 let rawData = [];
 let chart;
 
+/* Responsive Navigation */
 function toggleNav() {
   document.querySelector('.nav').classList.toggle('open');
 }
 
-fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv')
+/* Load historical CSV */
+fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_historical.csv')
   .then(res => res.text())
-  .then(text => {
-    const rows = text.trim().split('\n').slice(1);
+  .then(text => parseCSV(text));
 
-    rawData = rows.map(r => {
-      const cols = r.split(',');
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const header = lines[0].split(',');
 
-      return {
-        holder: cols[0],
-        issuer: cols[1],
-        isin: cols[2],
-        position: parseFloat(cols[3]),
-        date: cols[4]
-      };
-    });
+  // Header mapping (robust & professionell)
+  const map = {};
+  header.forEach((h, i) => map[h.trim()] = i);
 
-    render();
-  });
+  rawData = lines.slice(1).map(line => {
+    const cols = line.split(',');
+
+    return {
+      holder: cols[map["Position Holder"]],
+      issuer: cols[map["Issuer"]],
+      isin: cols[map["ISIN"]],
+      date: cols[map["Date"]],
+      position: parseFloat(cols[map["Net Short Position (%)"]])
+    };
+  }).filter(d => !isNaN(d.position));
+
+  render();
+}
 
 function render() {
   const issuerFilter = document.getElementById('issuerFilter').value.toLowerCase();
@@ -57,7 +66,11 @@ function renderTable(data) {
 
 function renderChart(data) {
   const ctx = document.getElementById('shortChart').getContext('2d');
-  const sorted = data.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  // Zeitlich korrekt sortieren
+  const sorted = data.slice().sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
 
   if (chart) chart.destroy();
 
@@ -66,11 +79,12 @@ function renderChart(data) {
     data: {
       labels: sorted.map(d => d.date),
       datasets: [{
+        label: 'Netto-Short-Position (%)',
         data: sorted.map(d => d.position),
         borderColor: '#1f2933',
         backgroundColor: 'rgba(31,41,51,0.08)',
         tension: 0.25,
-        pointRadius: 2
+        pointRadius: 1.8
       }]
     },
     options: {
@@ -86,6 +100,7 @@ function renderChart(data) {
 document.getElementById('issuerFilter').addEventListener('input', render);
 document.getElementById('holderFilter').addEventListener('input', render);
 
+/* CSV Export der gefilterten Tabelle */
 function downloadCSV() {
   const rows = [['Datum','Aktie','Institution','Position (%)']];
   document.querySelectorAll('#dataTable tbody tr').forEach(tr => {
