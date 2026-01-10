@@ -3,30 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>netshort.at - Österreichische Netto-Short-Positionen</title>
+  <title>netshort.at – Österreichische Netto-Short-Positionen</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- PapaParse für korrektes CSV Parsing -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
-  <!-- Chart.js für Diagramme -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
     <h1>netshort.at</h1>
-    <p>Österreichische Netto-Short-Positionen</p>
+    <nav>
+      <a href="#ueberblick">Überblick</a>
+      <a href="#tabelle">Tabelle</a>
+      <a href="#chart">Chart</a>
+      <a href="#hinweise">Hinweise</a>
+      <a href="#impressum">Impressum</a>
+    </nav>
   </header>
 
   <main>
-    <section class="filters">
-      <label>Aktie filtern: <input id="issuerFilter" type="text" placeholder="z.B. OMV"></label>
-      <label>Institution filtern: <input id="holderFilter" type="text" placeholder="z.B. BlackRock"></label>
-      <button onclick="downloadCSV()">CSV herunterladen</button>
+    <section id="ueberblick">
+      <h2>Österreichische Netto-Short-Positionen</h2>
+      <p>Sachliche Darstellung gemeldeter Netto-Leerverkaufspositionen auf Basis öffentlich zugänglicher Daten der FMA. Kein Anlageprodukt, keine Beratung, keine Handelssignale.</p>
     </section>
 
-    <section class="table">
-      <table id="dataTable">
+    <section id="tabelle">
+      <h2>Tabelle</h2>
+      <label>Aktie filtern … <input type="text" id="filter-issuer"></label>
+      <label>Institution filtern … <input type="text" id="filter-holder"></label>
+      <button id="download-csv">CSV herunterladen</button>
+      <table id="shorts-table">
         <thead>
           <tr>
             <th>Datum</th>
@@ -39,11 +43,12 @@
       </table>
     </section>
 
-    <section class="chart">
-      <canvas id="shortChart"></canvas>
+    <section id="chart">
+      <h2>Historische Entwicklung</h2>
+      <canvas id="shorts-chart"></canvas>
     </section>
 
-    <section class="info">
+    <section id="hinweise">
       <h2>Hinweise & Einordnung</h2>
       <ul>
         <li>Meldeschwelle gemäß EU-SSR: ≥ 0,2 %</li>
@@ -51,15 +56,17 @@
         <li>Cancellation ≠ vollständige Eindeckung</li>
         <li>Short-Verbote können Datenlücken verursachen</li>
         <li>Keine Anlageberatung, keine Vollständigkeitsgarantie</li>
+        <li>Historische Daten basieren auf dem offiziellen Excel-Export der FMA (Short Selling – Historical Positions)</li>
       </ul>
     </section>
 
-    <section class="impressum">
+    <section id="impressum">
       <h2>Impressum</h2>
       <p>netshort.at – Privates, nicht-kommerzielles Informationsprojekt.</p>
       <p>Verantwortlich für den Inhalt: Betreiber der Domain netshort.at</p>
+      <p>Keine Gewähr für Richtigkeit, Vollständigkeit oder Aktualität der dargestellten Daten. Es handelt sich ausdrücklich um keine Anlageberatung.</p>
       <p>© 2025 netshort.at</p>
-      <p>Datenquelle: FMA Österreich, historische Daten aus Excel-Export</p>
+      <p>Erstellt mithilfe von KI (ChatGPT) · Datenquelle: FMA Österreich</p>
     </section>
   </main>
 
