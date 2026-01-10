@@ -9,15 +9,19 @@ fetch('https://raw.githubusercontent.com/netshort-at/netshort/main/fma_test.csv'
   .then(res => res.text())
   .then(text => {
     const rows = text.trim().split('\n').slice(1);
+
     rawData = rows.map(r => {
-      const [date, issuer, holder, position] = r.split(',');
+      const cols = r.split(',');
+
       return {
-        date,
-        issuer,
-        holder,
-        position: parseFloat(position)
+        holder: cols[0],
+        issuer: cols[1],
+        isin: cols[2],
+        position: parseFloat(cols[3]),
+        date: cols[4]
       };
     });
+
     render();
   });
 
@@ -38,16 +42,21 @@ function render() {
 function renderTable(data) {
   const tbody = document.querySelector('#dataTable tbody');
   tbody.innerHTML = '';
+
   data.forEach(d => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${d.date}</td><td>${d.issuer}</td><td>${d.holder}</td><td>${d.position.toFixed(2)}</td>`;
+    tr.innerHTML = `
+      <td>${d.date}</td>
+      <td>${d.issuer}</td>
+      <td>${d.holder}</td>
+      <td>${d.position.toFixed(2)}</td>
+    `;
     tbody.appendChild(tr);
   });
 }
 
 function renderChart(data) {
   const ctx = document.getElementById('shortChart').getContext('2d');
-
   const sorted = data.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
 
   if (chart) chart.destroy();
@@ -57,26 +66,18 @@ function renderChart(data) {
     data: {
       labels: sorted.map(d => d.date),
       datasets: [{
-        label: 'Netto-Short-Position (%)',
         data: sorted.map(d => d.position),
-        borderColor: '#111',
-        backgroundColor: 'rgba(0,0,0,0.05)',
-        tension: 0.2,
+        borderColor: '#1f2933',
+        backgroundColor: 'rgba(31,41,51,0.08)',
+        tension: 0.25,
         pointRadius: 2
       }]
     },
     options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
-      },
+      plugins: { legend: { display: false } },
       scales: {
-        x: {
-          ticks: { color: '#555' }
-        },
-        y: {
-          ticks: { color: '#555' }
-        }
+        x: { ticks: { color: '#4b5563' } },
+        y: { ticks: { color: '#4b5563' } }
       }
     }
   });
