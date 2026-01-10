@@ -1,4 +1,3 @@
-/* Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,23 +6,23 @@
 
 body {
   font-family: Arial, sans-serif;
-  color: #222;
+  color: #1f2933;
   background: #fff;
   line-height: 1.6;
 }
 
-/* HEADER */
+/* Header */
 .site-header {
-  border-bottom: 1px solid #ddd;
-  padding: 0.8rem 1.5rem;
+  border-bottom: 1px solid #d0d7de;
 }
 
 .header-inner {
   max-width: 1200px;
   margin: auto;
+  padding: 0.9rem 1.5rem;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 }
 
 .logo {
@@ -41,11 +40,12 @@ body {
 .nav a {
   margin-left: 1.2rem;
   text-decoration: none;
-  color: #222;
+  color: #1f2933;
   font-size: 0.95rem;
 }
 
 .nav a:hover {
+  color: #0f3d63;
   text-decoration: underline;
 }
 
@@ -56,11 +56,11 @@ body {
   font-size: 1.4rem;
 }
 
-/* MAIN */
+/* Main */
 main {
   max-width: 1200px;
   margin: auto;
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 1.5rem;
 }
 
 .hero {
@@ -75,14 +75,14 @@ main {
 }
 
 .hero p {
-  max-width: 800px;
+  max-width: 820px;
   margin: auto;
-  color: #555;
+  color: #4b5563;
 }
 
-/* SECTIONS */
+/* Sections */
 section {
-  margin-bottom: 3rem;
+  margin-bottom: 3.5rem;
 }
 
 h2 {
@@ -90,61 +90,67 @@ h2 {
   margin-bottom: 1rem;
 }
 
-/* FILTERS */
+/* Filters */
 .filters {
   margin-bottom: 1rem;
 }
 
 .filters input {
-  padding: 0.4rem;
+  padding: 0.45rem;
   margin-right: 0.5rem;
 }
 
 .filters button {
-  padding: 0.4rem 0.8rem;
+  padding: 0.45rem 0.8rem;
+  background: #1f2933;
+  color: #fff;
+  border: none;
+  cursor: pointer;
 }
 
-/* TABLE */
+.filters button:hover {
+  background: #0f3d63;
+}
+
+/* Table */
 table {
   width: 100%;
   border-collapse: collapse;
 }
 
 th, td {
-  border-bottom: 1px solid #ddd;
   padding: 0.6rem;
-  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 th {
-  background: #f5f5f5;
+  background: #f8fafc;
 }
 
-/* NOTES */
+/* Notes & Imprint */
 .notes ul {
   padding-left: 1.2rem;
 }
 
-.notes li {
-  margin-bottom: 0.4rem;
+.imprint p {
+  max-width: 800px;
+  color: #374151;
 }
 
-/* FOOTER */
+/* Footer */
 .site-footer {
-  border-top: 1px solid #ddd;
-  padding: 2rem 1.5rem;
+  border-top: 1px solid #d0d7de;
   text-align: center;
+  padding: 2rem 1.5rem;
   font-size: 0.9rem;
-  color: #444;
 }
 
 .site-footer .small {
   font-size: 0.8rem;
-  color: #666;
-  margin-top: 0.4rem;
+  color: #6b7280;
 }
 
-/* RESPONSIVE */
+/* Responsive */
 @media (max-width: 768px) {
   .nav {
     display: none;
@@ -152,15 +158,11 @@ th {
     margin-top: 1rem;
   }
 
-  .nav a {
-    margin: 0.4rem 0;
+  .nav.open {
+    display: flex;
   }
 
   .nav-toggle {
     display: block;
-  }
-
-  .nav.open {
-    display: flex;
   }
 }
