@@ -5,32 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>netshort.at – Österreichische Netto-Short-Positionen</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
-    <h1>netshort.at</h1>
-    <nav>
-      <a href="#ueberblick">Überblick</a>
-      <a href="#tabelle">Tabelle</a>
-      <a href="#chart">Chart</a>
-      <a href="#hinweise">Hinweise</a>
-      <a href="#impressum">Impressum</a>
-    </nav>
+    <div class="header-content">
+      <h1>netshort.at</h1>
+      <nav>
+        <ul>
+          <li><a href="#ueberblick">Überblick</a></li>
+          <li><a href="#tabelle">Tabelle</a></li>
+          <li><a href="#chart">Chart</a></li>
+          <li><a href="#hinweise">Hinweise</a></li>
+          <li><a href="#impressum">Impressum</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
   <main>
     <section id="ueberblick">
       <h2>Österreichische Netto-Short-Positionen</h2>
       <p>Sachliche Darstellung gemeldeter Netto-Leerverkaufspositionen auf Basis öffentlich zugänglicher Daten der FMA. Kein Anlageprodukt, keine Beratung, keine Handelssignale.</p>
+
+      <!-- Hinweis im Aufbau -->
+      <div class="notice">
+        ⚠️ Hinweis: Die Seite befindet sich aktuell im Aufbau.<br>
+        Historische Netto-Short-Positionen werden bald angezeigt. Vielen Dank für Ihre Geduld!
+      </div>
     </section>
 
     <section id="tabelle">
       <h2>Tabelle</h2>
-      <label>Aktie filtern … <input type="text" id="filter-issuer"></label>
-      <label>Institution filtern … <input type="text" id="filter-holder"></label>
+      <div class="filters">
+        <label>
+          Aktie filtern …
+          <input type="text" id="filter-stock" placeholder="Issuer">
+        </label>
+        <label>
+          Institution filtern …
+          <input type="text" id="filter-holder" placeholder="Position Holder">
+        </label>
+      </div>
       <button id="download-csv">CSV herunterladen</button>
-      <table id="shorts-table">
+
+      <table id="netshort-table">
         <thead>
           <tr>
             <th>Datum</th>
@@ -39,13 +57,15 @@
             <th>Position (%)</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <!-- Daten werden hier eingefügt -->
+        </tbody>
       </table>
     </section>
 
     <section id="chart">
       <h2>Historische Entwicklung</h2>
-      <canvas id="shorts-chart"></canvas>
+      <p>Chart folgt, sobald historische Daten integriert sind.</p>
     </section>
 
     <section id="hinweise">
@@ -64,7 +84,8 @@
       <h2>Impressum</h2>
       <p>netshort.at – Privates, nicht-kommerzielles Informationsprojekt.</p>
       <p>Verantwortlich für den Inhalt: Betreiber der Domain netshort.at</p>
-      <p>Keine Gewähr für Richtigkeit, Vollständigkeit oder Aktualität der dargestellten Daten. Es handelt sich ausdrücklich um keine Anlageberatung.</p>
+      <p>Keine Gewähr für Richtigkeit, Vollständigkeit oder Aktualität der dargestellten Daten.<br>
+      Es handelt sich ausdrücklich um keine Anlageberatung.</p>
       <p>© 2025 netshort.at</p>
       <p>Erstellt mithilfe von KI (ChatGPT) · Datenquelle: FMA Österreich</p>
     </section>
